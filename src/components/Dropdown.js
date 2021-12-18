@@ -1,0 +1,56 @@
+import React, { useState, useEffect, useRef } from "react";
+
+const Dropdown = ({label, options, selected, onSelectedChange}) => {
+    const [open, setOpen] = useState(false);
+    const ref = useRef();
+
+    useEffect(() => {
+        const onBodyClick = (event) => {
+            //if the targeted ref is clicked will return without running rest of code
+            if (ref.current.contains(event.target)) {
+                return;
+        }
+        setOpen(false)
+    }
+    //set and remove the event listeners
+        document.body.addEventListener('click', onBodyClick, {capture: true})
+    //cleanup function
+        return () => {
+            document.body.removeEventListener('click', onBodyClick, {capture: true})    
+        }
+    }, []);
+
+
+    const renderedOptions = options.map((option) => {
+        return (
+            <div
+            key={option.value}
+            className={`item ${selected === option ? 'active' : ''}`}
+            onClick={() => onSelectedChange(option)}>
+                {option.label}
+            </div>
+        )
+    })
+    
+
+    return (
+        <div ref={ref} className="ui form">
+            <div className="field">
+                <label className="label">{label}</label>
+                <div 
+                onClick={() => setOpen(!open)}
+                className={`ui selection dropdown ${open ? 'visible active' : ''}`}>
+                    <i className="dropdown icon"></i>
+                    <div className="text">{selected.label}</div>
+                    <div className={`menu ${open ? 'visible transition' : ''}`}>
+                        {renderedOptions}
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    )
+}
+
+//<p style={{color: selected.value}}>What colour am i?</p>
+export default Dropdown
